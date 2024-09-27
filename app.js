@@ -1,3 +1,4 @@
+// first commit from main branch
 const express = require('express');
 const bodyParser = require('body-parser');
 const { sequelize } = require('./models');
