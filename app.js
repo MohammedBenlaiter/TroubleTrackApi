@@ -9,7 +9,14 @@ app.use(bodyParser.json());
 const userRoutes = require('./routes/userRoutes');
 app.use('/api', userRoutes);
 
+const projectRoutes = require('./routes/projectRoutes');
+app.use('/api', projectRoutes);
+
+const projectMemberRoutes = require('./routes/projectMemberRoutes');
+app.use('/api', projectMemberRoutes);
+
 const PORT = process.env.PORT || 3000;
+
 
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
