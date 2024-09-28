@@ -1,10 +1,11 @@
 {
   "development": {
-    "username": "postgres",
-    "password": "2023",
-    "database": "troubleTrackDb",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
+    "username": "postgres.yztpgbovfpzswdaahaqa",
+    "password": "benlaiter2023",
+    "database": "postgres",
+    "host": "aws-0-ap-northeast-1.pooler.supabase.com",
+    "dialect": "postgres",
+    "port": "6543"
   },
   "test": {
     "username": "root",
