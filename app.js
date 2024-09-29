@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { sequelize } = require('./models');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
@@ -17,6 +19,9 @@ app.use('/api', projectMemberRoutes);
 
 const errorRoutes = require('./routes/errorRoutes');
 app.use('/api', errorRoutes);
+
+const authRoutes = require('./routes/authRoutes');
+app.use('/api', authRoutes);
 
 const PORT = process.env.PORT || 3000;
 
