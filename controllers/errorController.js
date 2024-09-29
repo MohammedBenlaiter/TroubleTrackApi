@@ -1,6 +1,6 @@
 const { Project, User, ProjectMember, Error } = require('../models');
 
-exports.AddReportError = async (req, res) => {
+exports.addReportError = async (req, res) => {
     const { projectId } = req.params;
     const { userId, type, message, stackTrace, status } = req.body;
     try {
@@ -46,7 +46,141 @@ exports.AddReportError = async (req, res) => {
     }
 } // is still just authentication 
 
+exports.getErrors = async (req, res) => {
+    const { projectId } = req.params;
+    const { userId } = req.body;
+    try {
+        const project = await Project.findByPk(projectId);
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        if (!project) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+        let isOriginalMember = false;
+        if (project.ownerId === user.userId) {
+            isOriginalMember = true;
+        }
+        let isMember = false;
+        const projectMembers = await ProjectMember.findAll({
+            where: {
+                projectId: projectId,
+            }
+        });
+        projectMembers.forEach(member => {
+            if (member.userId === user.userId) {
+                isMember = true;
+            }
+        })
+        if (isOriginalMember || isMember) {
+            const errors = await Error.findAll({
+                where: {
+                    projectId: projectId
+                }
+            });
+            return res.json(errors);
+        }
+        else {
+            return res.status(403).json({ error: "This user can't view errors" });
+        }
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+};
 
-exports.GetErrors = async (req, res) => {
-    
+exports.updateError = async (req, res) => {
+    const { projectId, errorId } = req.params;
+    const { userId, type, message, stackTrace, status } = req.body;
+    try {
+        const project = await Project.findByPk(projectId);
+        const error = await Error.findByPk(errorId);
+        const user = await User.findByPk(userId);
+        if (!project) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+        if (!error) {
+            return res.status(404).json({ error: 'Error not found' });
+        }
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+        }
+        if (error.projectId !== project.projectId) {
+            return res.status(404).json({ error: 'Error not found in this project' });
+        }
+        let isOwner = false;
+        let isMember = false;
+        if (user.userId === project.ownerId) {
+            isOwner = true;
+        }
+        const projectMembers = await ProjectMember.findAll({
+            where: {
+                projectId: projectId,
+            }
+        })
+        projectMembers.forEach(member => {
+            if (member.userId === user.userId) {
+                isMember = true;
+            }
+        })
+        if (isOwner || isMember) {
+            error.type = type;
+            error.message = message;
+            error.stackTrace = stackTrace;
+            error.status = status;
+            await error.save();
+            return res.json(error);
+        }
+        else {
+            return res.status(403).json({ error: "This user can't update an error" });
+        }
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+};
+
+exports.deleteError = async (req, res) => {
+    const { projectId, errorId } = req.params;
+    const { userId } = req.body;
+    try {
+        const project = await Project.findByPk(projectId);
+        const error = await Error.findByPk(errorId);
+        const user = await User.findByPk(userId);
+        if (!project) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+        if (!error) {
+            return res.status(404).json({ error: 'Error not found' });
+        }
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+        }
+        if (error.projectId !== project.projectId) {
+            return res.status(404).json({ error: 'Error not found in this project' });
+        }
+        let isOwner = false;
+        let isMemberOwner = false;
+        if (user.userId === project.ownerId) {
+            isOwner = true;
+        }
+        const projectMembers = await ProjectMember.findAll({
+            where: {
+                projectId: projectId,
+            }
+        })
+        projectMembers.forEach(member => {
+            if (member.userId === user.userId && member.role === 'owner') {
+                isMemberOwner = true;
+            }
+        })
+        if (isOwner || isMemberOwner) {
+            await error.destroy();
+            return res.json({ message: 'Error deleted successfully' });
+        }
+        else {
+            return res.status(403).json({ error: "This user can't delete an error" });
+        }
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
 };
