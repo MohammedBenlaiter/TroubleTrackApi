@@ -32,27 +32,30 @@ module.exports = (sequelize, DataTypes) => {
         type: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true
-        }, message: {
+        },
+        message: {
             type: DataTypes.TEXT,
             allowNull: false
         },
-        stack_trace: {
-            type: DataTypes.TEXT
-        },
-        timestamp: {
-            type: DataTypes.DATE,
+        stackTrace: {
+            type: DataTypes.TEXT,
             allowNull: false
         },
         status: {
             type: DataTypes.STRING,
-            defaultValue: 'open'
+            defaultValue: 'open',
+            allowNull: false
+        },
+        postedBy: {
+            type: DataTypes.STRING,
+            allowNull: false
         },
     }, {
         sequelize,
         modelName: 'Error',
         tableName: 'Error',
-        timestamps: false
+        timestamps: true,
+        paranoid: true,
     });
     return Error;
 };

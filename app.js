@@ -15,6 +15,9 @@ app.use('/api', projectRoutes);
 const projectMemberRoutes = require('./routes/projectMemberRoutes');
 app.use('/api', projectMemberRoutes);
 
+const errorRoutes = require('./routes/errorRoutes');
+app.use('/api', errorRoutes);
+
 const PORT = process.env.PORT || 3000;
 
 
