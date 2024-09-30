@@ -1,10 +1,11 @@
+const { authentication } = require('../middleware/auth');
 const express = require('express');
 
 const { addReportError, getErrors, updateError, deleteError } = require('../controllers/errorController');
 
 const router = express.Router();
 
-router.post('/projects/:projectId/errors', addReportError);
+router.post('/projects/:projectId/errors', authentication, addReportError);
 
 router.get('/projects/:projectId/errors', getErrors);
 

@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET_KEY;
 const expiresIn = process.env.JWT_EXPIRES_IN;
 
-const registerUser = async (req, res) => {
+exports.registerUser = async (req, res) => {
     try {
         const { username, firstName, lastName, email, password } = req.body;
         const userExist = await User.findOne({ where: { username } });
@@ -24,7 +24,7 @@ const registerUser = async (req, res) => {
     }
 };
 
-const loginUser = async (req, res) => {
+exports.loginUser = async (req, res) => {
     try {
         const { username, password } = req.body;
         const user = await User.findOne({ where: { username } });
@@ -48,5 +48,3 @@ const loginUser = async (req, res) => {
         return res.status(500).json({ error: 'Sign in error', details: error.message });
     }
 };
-
-module.exports = { registerUser, loginUser };
