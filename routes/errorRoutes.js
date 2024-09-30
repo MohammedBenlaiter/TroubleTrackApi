@@ -7,10 +7,10 @@ const router = express.Router();
 
 router.post('/projects/:projectId/errors', authentication, addReportError);
 
-router.get('/projects/:projectId/errors', getErrors);
+router.get('/projects/:projectId/errors', authentication, getErrors);
 
-router.put('/projects/:projectId/errors/:errorId', updateError);
+router.put('/projects/:projectId/errors/:errorId', authentication, updateError);
 
-router.delete('/projects/:projectId/errors/:errorId', deleteError);
+router.delete('/projects/:projectId/errors/:errorId', authentication, deleteError);
 
 module.exports = router;
