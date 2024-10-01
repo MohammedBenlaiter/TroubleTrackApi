@@ -1,40 +1,4 @@
 const { Project, User, ProjectMember, Error } = require('../models');
-const verifyOwnership = async (User, Project) => {
-    let isOwner = false;
-    let isMemberOwner = false;
-    if (User.userId === Project.ownerId) {
-        isOwner = true;
-    }
-    const projectMembers = await ProjectMember.findAll({
-        where: {
-            projectId: Project.projectId,
-        }
-    });
-    projectMembers.forEach(member => {
-        if (member.userId === User.userId && member.role === 'owner') {
-            isMemberOwner = true;
-        }
-    });
-    return isOwner || isMemberOwner;
-}
-const verifyMembership = async (User, Project) => {
-    let isOriginalMember = false;
-    if (Project.ownerId === User.userId) {
-        isOriginalMember = true;
-    }
-    let isMember = false;
-    const projectMembers = await ProjectMember.findAll({
-        where: {
-            projectId: Project.projectId,
-        }
-    });
-    projectMembers.forEach(member => {
-        if (member.userId === User.userId) {
-            isMember = true;
-        }
-    })
-    return isOriginalMember || isMember;
-};
 
 exports.addReportError = async (req, res) => {
     const { projectId } = req.params;
@@ -119,7 +83,7 @@ exports.updateError = async (req, res) => {
         if (error.projectId !== project.projectId) {
             return res.status(404).json({ error: 'Error not found in this project' });
         }
-        let isOwner = await verifyOwnership(user, project);
+        let isOwner = await verifyMembership(user, project);
         if (isOwner) {
             error.type = type;
             error.message = message;
@@ -166,4 +130,41 @@ exports.deleteError = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error', details: error.message });
     }
+};
+
+const verifyOwnership = async (User, Project) => {
+    let isOwner = false;
+    let isMemberOwner = false;
+    if (User.userId === Project.ownerId) {
+        isOwner = true;
+    }
+    const projectMembers = await ProjectMember.findAll({
+        where: {
+            projectId: Project.projectId,
+        }
+    });
+    projectMembers.forEach(member => {
+        if (member.userId === User.userId && member.role === 'owner') {
+            isMemberOwner = true;
+        }
+    });
+    return isOwner || isMemberOwner;
+}
+const verifyMembership = async (User, Project) => {
+    let isOriginalMember = false;
+    if (Project.ownerId === User.userId) {
+        isOriginalMember = true;
+    }
+    let isMember = false;
+    const projectMembers = await ProjectMember.findAll({
+        where: {
+            projectId: Project.projectId,
+        }
+    });
+    projectMembers.forEach(member => {
+        if (member.userId === User.userId) {
+            isMember = true;
+        }
+    })
+    return isOriginalMember || isMember;
 };

@@ -39,9 +39,9 @@ exports.loginUser = async (req, res) => {
             expiresIn,
         });
         return res.status(200).json({
-            id: user.userId,
-            username: user.username,
-            email: user.email,
+            /*  id: user.userId,
+                username: user.username,
+                email: user.email, */
             accessToken: token,
         });
     } catch (error) {
