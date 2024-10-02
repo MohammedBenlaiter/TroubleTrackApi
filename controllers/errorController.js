@@ -24,7 +24,7 @@ exports.addReportError = async (req, res) => {
                 status: status,
                 postedBy: user.username
             });
-            return res.status(201).json(newError);
+            return res.status(201).json({ message: 'Error reported successfully', error: newError });
         }
         else {
             return res.status(403).json({ error: "This user can't post an error" });
@@ -90,7 +90,7 @@ exports.updateError = async (req, res) => {
             error.stackTrace = stackTrace;
             error.status = status;
             await error.save();
-            return res.json(error);
+            return res.json({ message: "Error updated successfully", error });
         }
         else {
             return res.status(403).json({ error: "This user can't update an error" });
